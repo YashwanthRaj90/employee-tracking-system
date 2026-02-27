@@ -13,13 +13,12 @@ class OfficialDocumentController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'document_category' => 'required|string|max:255',
-            'language' => 'required|in:HINDI,ENGLISH,BILINGUAL',
-            'subject' => 'nullable|string|max:255',
-            'issue_date' => 'required|date'
-        ]);
+       $request->validate([
+    'employee_id' => 'required|exists:employees,id',
+    'document_type' => 'required|in:NOTING,LETTER',
+    'language' => 'required|in:HINDI,ENGLISH,BILINGUAL',
+    'document_date' => 'required|date'
+]);
 
         $employee = Employee::findOrFail($request->employee_id);
 
@@ -49,17 +48,24 @@ class OfficialDocumentController extends Controller
         }
 
         // 4️⃣ Create document
-        $document = OfficialDocument::create([
-            'employee_id' => $employee->id,
-            'document_category' => $request->document_category,
-            'language' => $request->language,
-            'subject' => $request->subject,
-            'issue_date' => $issueDate,
-            'financial_year' => $financialYear,
-            'month' => $month,
-            'created_by' => Auth::id(),
-            'is_locked' => false
-        ]);
+        $issueDate = Carbon::parse($request->document_date);
+$month = $issueDate->month;
+$year = $issueDate->year;
+
+if ($month >= 4) {
+    $financialYear = $year . '-' . substr($year + 1, -2);
+} else {
+    $financialYear = ($year - 1) . '-' . substr($year, -2);
+}
+
+$document = OfficialDocument::create([
+    'employee_id' => $employee->id,
+    'document_type' => $request->document_type,
+    'language' => $request->language,
+    'document_date' => $issueDate,
+    'financial_year' => $financialYear,
+    'month' => $month
+]);
 
         return response()->json($document, 201);
     }
