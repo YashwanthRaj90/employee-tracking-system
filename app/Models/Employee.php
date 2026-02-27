@@ -15,7 +15,17 @@ class Employee extends Model
         'date_of_retirement',
         'is_active'
     ];
+    public function hindiLevel()
+{
+    return $this->hasOne(EmployeeHindiLevel::class);
+}
+
+public function courses()
+{
+    return $this->belongsToMany(Course::class, 'employee_courses');
+}
     public function postAssignments()
+    
 {
     return $this->hasMany(EmployeePostAssignment::class);
 }

@@ -98,4 +98,31 @@ $document = OfficialDocument::create([
             'hindi_percentage' => $hindiPercentage
         ]);
     }
+    public function hindiCompetency()
+{
+    $totalEmployees = \App\Models\Employee::count();
+
+    $levels = \App\Models\EmployeeHindiLevel::with('level')->get();
+
+    $n = $levels->where('level.code', 'N')->count();
+    $b = $levels->where('level.code', 'B')->count();
+    $k = $levels->where('level.code', 'K')->count();
+    $p = $levels->where('level.code', 'P')->count();
+
+    $trained = $levels->count();
+
+    $trainedPercentage = $totalEmployees > 0
+        ? round(($trained / $totalEmployees) * 100, 2)
+        : 0;
+
+    return response()->json([
+        'total_employees' => $totalEmployees,
+        'N_level' => $n,
+        'B_level' => $b,
+        'K_level' => $k,
+        'P_level' => $p,
+        'trained_percentage' => $trainedPercentage,
+        'untrained_percentage' => 100 - $trainedPercentage
+    ]);
+}
 }

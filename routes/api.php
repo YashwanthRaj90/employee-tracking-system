@@ -15,7 +15,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
-
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/reports/hindi-competency', [OfficialDocumentController::class, 'hindiCompetency']);
+});
 
 Route::middleware(['auth:sanctum', 'role:HR Admin'])->group(function () {
 
